@@ -14,7 +14,7 @@ contract Casino is Ownable {
     uint256 amountOut;
     uint256 amountIn;
     address fundAddress;
-    uint256 percentage = 1300;
+
     
     constructor(address _token1) {
      token1 = IERC20(_token1);
@@ -32,10 +32,9 @@ contract Casino is Ownable {
          );    
         token1.transferFrom(msg.sender, address(this), _amountIn * 1e18);
         // 13% fee
-         uint256 percentageFee = (_amountIn.mul(percentage)).div(10000);
-         uint256 total = _amountIn.sub(percentageFee);
+        uint256 percentageFee = token1.balanceOf(address(this)) * 13/100 ;
 
-        token1.transfer(fundAddress, percentageFee); 
+        token1.transfer(fundAddress, percentageFee ); 
          amountIn = token1.balanceOf(address(this));
         
     }
@@ -43,9 +42,9 @@ contract Casino is Ownable {
         return amountIn;
     }
 
-    function withdrawFees() external {
+    function claimEarnings() external {
      require (
-         token1.balanceOf(address(this)) > 1 
+         token1.balanceOf(address(this)) > 1, "Balance too low to withdraw" 
          );
          token1.transfer(msg.sender, amountIn); 
     }
